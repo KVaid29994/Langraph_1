@@ -1,5 +1,5 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-
+from langchain_openai import ChatOpenAI
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 from dotenv import load_dotenv
 
