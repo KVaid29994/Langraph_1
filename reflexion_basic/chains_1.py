@@ -2,7 +2,7 @@
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 from dotenv import load_dotenv
-from schema import AnswerQuestion
+from schema import AnswerQuestion , ReviseAnswer
 from langchain_core.output_parsers.openai_tools import PydanticToolsParser
 from langchain_core.runnables import RunnableLambda
 import datetime
@@ -44,6 +44,22 @@ first_responder_prompt_template = actor_prompt_template.partial(
 )
 
 first_responder_chain = first_responder_prompt_template | llm.bind_tools(tools=[AnswerQuestion], tool_choice= "AnswerQuestion") | pydantic_parser
+
+revise_instructios = '''
+revise your previous answer using the new information.
+    - you must use your previous crtique to add important information to your answer
+    - you must include numerical citations in your revised answer to ensure it can be verified
+    - add refernece to the bottom of your answer to ensure it can be verified, In form of
+        - 1) https://example.com
+        - 1) https://examplew.com
+
+    - you should previous critique to ensure removal of superflous information from your answer
+    Make sure your answer is not more than 250 words
+
+'''
+revisor_chain = actor_prompt_template.partial(first_instruction = revise_instructios) | llm.bind_tools(tool =[ReviseAnswer], tool_choice="ReviseAnswer")
+
+
 
 response= first_responder_chain.invoke({"messages": [HumanMessage(content = "Write me a blog post on how AI can help small businness to grow")]})
 
