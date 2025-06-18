@@ -43,7 +43,9 @@ first_responder_prompt_template = actor_prompt_template.partial(
     first_instruction="Provide a detailed ~250 word answer"
 )
 
-first_responder_chain = first_responder_prompt_template | llm.bind_tools(tools=[AnswerQuestion], tool_choice= "AnswerQuestion") | pydantic_parser
+first_responder_chain = first_responder_prompt_template | llm.bind_tools(tools=[AnswerQuestion], tool_choice= "AnswerQuestion")
+
+validator = PydanticToolsParser(tools=[AnswerQuestion])
 
 revise_instructios = '''
 revise your previous answer using the new information.
@@ -57,7 +59,7 @@ revise your previous answer using the new information.
     Make sure your answer is not more than 250 words
 
 '''
-revisor_chain = actor_prompt_template.partial(first_instruction = revise_instructios) | llm.bind_tools(tool =[ReviseAnswer], tool_choice="ReviseAnswer")
+revisor_chain = actor_prompt_template.partial(first_instruction = revise_instructios) | llm.bind_tools(tools =[ReviseAnswer], tool_choice="ReviseAnswer")
 
 
 
