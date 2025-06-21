@@ -1,17 +1,18 @@
-from typing import TypedDict  , List
+from typing import TypedDict  , List , Annotated
+import operator
 from langgraph.graph import END , StateGraph
 from IPython.display import Image, display
 
 class SimpleState(TypedDict):
     count : int
-    sum :  int
-    history : List[int]
+    sum :  Annotated[int, operator.add]
+    history : Annotated[List[int] , operator.concat]
 
 
 def increment(state : SimpleState)-> SimpleState:
     new_count = state["count"] +1
     return {
-        "count" : new_count , "sum" : state["sum"] + new_count , "history" : state["history"] + [new_count]
+        "count" : new_count , "sum" :  new_count , "history" :  [new_count]
      }
 
 def should_conitnue(state):
