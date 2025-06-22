@@ -3,10 +3,13 @@ from langgraph.graph import END, StateGraph,add_messages
 from langchain_groq import ChatGroq
 from langchain_core.messages import AIMessage, HumanMessage
 from dotenv import load_dotenv
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
+import sqlite3
 
 load_dotenv()
-memory = MemorySaver()
+
+sqlite_conn = sqlite3.connect("checkpoint.sqlite", check_same_thread=False)
+memory = SqliteSaver(sqlite_conn)
 
 llm = ChatGroq(model = "llama-3.1-8b-instant", temperature= 0.2)
 
@@ -35,11 +38,3 @@ while True:
         result =  app.invoke({"messages": HumanMessage(content=user_input)},config=config)
 
         print ("AI: " + result["messages"][-1].content)
-# response1 = app.invoke({"messages": HumanMessage(content="Hi I am Kashish")},config=config)
-# response2 = app.invoke({"messages": HumanMessage(content="what is my name?")},config=config)
-
-# print (app.get_state(config=config))
-# print (response1)
-# print ("----"*10)
-# print (response2)
-
